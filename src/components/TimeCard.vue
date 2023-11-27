@@ -16,6 +16,8 @@
                 class="linechart cursor-pointer" 
             >
             </path>
+            <g ref="xAxis" transform="translate(0, cardHeight)"></g>
+            <g ref="yAxis"></g>
         </svg>
         <a-dropdown :open="isDropdownVisible" class="absolute top-0 right-0 mr-1 mt-1">
             <template #overlay>
@@ -46,6 +48,7 @@ import { scales } from "../scale/scale"
 import { generatePath } from "../generator/generator"
 
 import { interpolatePurples } from 'd3-scale-chromatic';
+import { axisLeft, axisBottom } from 'd3-axis'; 
 
 
 export default {
@@ -166,6 +169,7 @@ export default {
             variableCollection,
             visibleVariables,
             selectedData,
+            cardHeight,
             xScale,
             yScale,
             generatePath,
