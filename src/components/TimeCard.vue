@@ -16,8 +16,8 @@
                 class="linechart cursor-pointer" 
             >
             </path>
-            <g ref="xAxis" transform="translate(0, cardHeight)"></g>
-            <g ref="yAxis"></g>
+            <g ref="xAxisRef" :transform="`translate(0, ${cardHeight - 20})`"></g>
+            <g ref="yAxisRef" transform="translate(10,0)"></g>
         </svg>
         <a-dropdown :open="isDropdownVisible" class="absolute top-0 right-0 mr-1 mt-1">
             <template #overlay>
@@ -40,7 +40,7 @@
 </template>
 
 <script>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watchEffect  } from 'vue'
 import { Dropdown, Menu, Checkbox, Button } from 'ant-design-vue'
 import { DownOutlined, UpOutlined } from '@ant-design/icons-vue'
 
@@ -48,7 +48,7 @@ import { scales } from "../scale/scale"
 import { generatePath } from "../generator/generator"
 
 import { interpolatePurples } from 'd3-scale-chromatic';
-import { axisLeft, axisBottom } from 'd3-axis'; 
+import * as d3 from "d3" 
 
 
 export default {
@@ -72,12 +72,20 @@ export default {
         const cardHeight = ref(0)
         const svgRef = ref(null)
 
+        const xAxisRef = ref(null)
+        const yAxisRef = ref(null)
+
+
+
+        
+
+
+
         onMounted(() => {
             if (svgRef.value) {
-                cardWidth.value = svgRef.value.clientWidth;
-                cardHeight.value = svgRef.value.clientHeight;
-            }
-            // console.log(cardWidth.value)
+                cardWidth.value = svgRef.value.clientWidth
+                cardHeight.value = svgRef.value.clientHeight
+            }    
         })
 
         const triggerFileInput = () => {
@@ -157,6 +165,18 @@ export default {
                 return scales(selectedData.value,cardWidth.value,cardHeight.value).yScale  
         })
 
+        watchEffect(() => {
+            if (xAxisRef.value) {
+                const xAxis = d3.axisBottom(xScale.value);
+                d3.select(xAxisRef.value).call(xAxis);
+            }
+
+            if (yAxisRef.value) {
+                const yAxis = d3.axisRight(yScale.value);
+                d3.select(yAxisRef.value).call(yAxis);
+            }
+        });
+
         return { 
             fileInput, 
             fileData, 
@@ -172,6 +192,8 @@ export default {
             cardHeight,
             xScale,
             yScale,
+            xAxisRef,
+            yAxisRef,
             generatePath,
             interpolatePurples
         }
