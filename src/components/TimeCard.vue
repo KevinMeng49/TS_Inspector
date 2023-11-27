@@ -5,7 +5,13 @@
             :icon="['fas', 'file-import']" 
             class="ml-2 mt-2 cursor-pointer absolute top-0 left-0 z-10 hover:bg-blue-200 p-1 rounded-md" 
             @click="triggerFileInput" />
-        <svg class="w-full h-full bg-blue-100 rounded-md" ref="svgRef">
+        <svg 
+        class="w-full h-full bg-blue-100 rounded-md" 
+        ref="svgRef"
+        @mouseover="handleMouseOver"
+        @mouseleave="handleMouseLeave"
+        @mousemove="handleMouseMove"
+        >
             <path 
                 v-for="(num,index) in visibleVariables.length" 
                 :key="num"
@@ -16,8 +22,24 @@
                 class="linechart cursor-pointer" 
             >
             </path>
-            <g ref="xAxisRef" :transform="`translate(0, ${cardHeight - 20})`"></g>
-            <g ref="yAxisRef" transform="translate(10,0)"></g>
+            <g ref="xAxisRef" :transform="`translate(40, ${cardHeight - 20})`"></g>
+            <g ref="yAxisRef" style="display: none;" transform="translate(10,0)"></g>
+            <g>
+                <line 
+                v-if="dotLineVisible"
+                :x1 = "mouseX"
+                :y1 = yScale(0)
+                :x2 = "mouseX"
+                :y2 = getMax(selectedData)
+                stroke = "#bdbdbd"
+                stroke-width = "3"
+                stroke-dasharray = "10"
+                />
+                <text></text>
+            </g>
+        
+
+            
         </svg>
         <a-dropdown :open="isDropdownVisible" class="absolute top-0 right-0 mr-1 mt-1">
             <template #overlay>
@@ -50,6 +72,8 @@ import { generatePath } from "../generator/generator"
 import { interpolatePurples } from 'd3-scale-chromatic';
 import * as d3 from "d3" 
 
+import { getMax } from '../computation/computation'
+
 
 export default {
     name: "TimeCard",
@@ -75,11 +99,8 @@ export default {
         const xAxisRef = ref(null)
         const yAxisRef = ref(null)
 
-
-
-        
-
-
+        const dotLineVisible = ref(false)
+        const mouseX = ref(0)
 
         onMounted(() => {
             if (svgRef.value) {
@@ -128,6 +149,21 @@ export default {
         const toggleDropdown = () => {
             isDropdownVisible.value = !isDropdownVisible.value;
         };
+
+        const handleMouseOver = (event) => {
+            dotLineVisible.value = true
+            const bounds = svgRef.value.getBoundingClientRect();
+            mouseX.value = event.clientX - bounds.left;
+        }
+
+        const handleMouseMove = (event) => {
+            const bounds = svgRef.value.getBoundingClientRect();
+            mouseX.value = event.clientX - bounds.left;
+        }
+
+        const handleMouseLeave = () => {
+            dotLineVisible.value = false
+        }
 
         const variableCollection = computed(() => {
             return Object.keys(fileData.value??{})
@@ -194,8 +230,14 @@ export default {
             yScale,
             xAxisRef,
             yAxisRef,
+            mouseX,
+            getMax,
             generatePath,
-            interpolatePurples
+            interpolatePurples,
+            handleMouseOver,
+            handleMouseMove,
+            handleMouseLeave,
+            dotLineVisible
         }
     }
 }
