@@ -41,7 +41,7 @@ export const scales = (data,width,height) => {
 
     const xScale = d3.scaleTime()
     .domain(d3.extent(Object.values(data)[0], d => d.Time)) 
-    .range([10, width - 10])
+    .range([30, width - 10])
 
     const yScale = d3.scaleLinear()
         .domain([0, max])

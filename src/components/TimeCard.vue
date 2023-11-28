@@ -17,7 +17,7 @@
             >
             </path>
             <g ref="xAxisRef" :transform="`translate(0, ${cardHeight - 20})`"></g>
-            <g ref="yAxisRef" transform="translate(10,0)"></g>
+            <g ref="yAxisRef" transform="translate(30,0)" style="display: none;"></g>
         </svg>
         <a-dropdown :open="isDropdownVisible" class="absolute top-0 right-0 mr-1 mt-1">
             <template #overlay>
@@ -74,12 +74,6 @@ export default {
 
         const xAxisRef = ref(null)
         const yAxisRef = ref(null)
-
-
-
-        
-
-
 
         onMounted(() => {
             if (svgRef.value) {
