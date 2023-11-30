@@ -82,6 +82,7 @@ import { generatePath } from "../generator/generator"
 import { interpolatePurples } from 'd3-scale-chromatic';
 import * as d3 from "d3" 
 
+import useTimeRange from "../hooks/useTimeRange"
 import { getMax, filterDataByTimeRange, getTimeStamp, getValues } from '../computation/computation'
 
 
@@ -115,6 +116,8 @@ export default {
 
         const dotLineVisible = ref(false)
         const mouseX = ref(0)
+
+        const { timeRange, setTimeRange } = useTimeRange()
 
         onMounted(() => {
             if (svgRef.value) {
@@ -170,6 +173,7 @@ export default {
 
         const reset = () => {
             fileData.value = fileData_copy.value
+            setTimeRange([])
         }
 
         const handleMouseOver = (event) => {
@@ -242,11 +246,11 @@ export default {
             const selection = event.selection;
             if (selection) {
                 // Convert the brush coordinates to your time scale
-                const timeRange = selection.map(xScale.value.invert)
+                const newTimeRange = selection.map(xScale.value.invert)
+                setTimeRange(newTimeRange)
                 // Use timeRange to filter or update your chart
                 //console.log('Selected Time Range:', timeRange)
-
-                fileData.value = filterDataByTimeRange(fileData.value,timeRange)
+                //fileData.value = filterDataByTimeRange(fileData.value,newTimeRange)
                 d3.select(brushRef.value).call(brushRef.value.brush.move, null)
             }
         };
@@ -262,6 +266,12 @@ export default {
             if (yAxisRef.value) {
                 const yAxis = d3.axisRight(yScale.value);
                 d3.select(yAxisRef.value).call(yAxis);
+            }
+        })
+
+        watchEffect(() => {
+            if (timeRange.value.length !=0) {
+                fileData.value = filterDataByTimeRange(fileData.value, timeRange.value)
             }
         })
         

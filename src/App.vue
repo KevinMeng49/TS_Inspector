@@ -2,7 +2,10 @@
 <div class="w-screen h-screen p-10">
   <div class="w-full h-full bg-stone-100">
     <div class="w-full h-full p-5 overflow overflow-scroll">
-      <TimeCard v-for="index in cardNum" :key="index"/>
+      <TimeCard 
+      v-for="index in cardNum" 
+      :key="index"
+      />
       <div class="flex">
         <!-- FontAwesome icon component -->
         <font-awesome-icon :icon="['fas', 'plus']" @click="addCard"/>
@@ -15,14 +18,12 @@
 
 
 <script>
-import Nav from "./Nav.vue"
 import TimeCard from "./components/TimeCard.vue"
 import { ref } from 'vue'
 
 export default {
   name: 'App',
   components: {
-    Nav,
     TimeCard
   },
   setup() {
