@@ -4,7 +4,13 @@
         <font-awesome-icon 
             :icon="['fas', 'file-import']" 
             class="ml-2 mt-2 cursor-pointer absolute top-0 left-0 z-10 hover:bg-blue-200 p-1 rounded-md" 
-            @click="triggerFileInput" />
+            @click="triggerFileInput" 
+        />
+        <font-awesome-icon 
+            :icon="['fas', 'arrow-rotate-left']" 
+            class="ml-2 mt-2 cursor-pointer absolute top-8 left-0 z-10 hover:bg-blue-200 p-1 rounded-md" 
+            @click="reset" 
+        />
         <svg 
         class="w-full h-full bg-blue-100 rounded-md" 
         ref="svgRef"
@@ -24,22 +30,26 @@
             </path>
             <g ref="xAxisRef" :transform="`translate(40, ${cardHeight - 20})`"></g>
             <g ref="yAxisRef" style="display: none;" transform="translate(10,0)"></g>
-            <g>
+            <g ref="brushRef" :transform="`translate(40, 0)`"></g>
+            <g v-if="false">
                 <line 
-                v-if="dotLineVisible"
                 :x1 = "mouseX"
-                :y1 = yScale(0)
+                :y1 = "yScale(0)"
                 :x2 = "mouseX"
                 :y2 = getMax(selectedData)
                 stroke = "#bdbdbd"
                 stroke-width = "3"
                 stroke-dasharray = "10"
                 />
-                <text></text>
-            </g>
-        
-
-            
+                <!-- <text
+                v-for="(value,key) in getValues(selectedData,getTimeStamp(mouseX,xScale))"
+                :x = "mouseX"
+                :y = "calculateYPosition(key,selectedData)"
+                :key="key"
+                >
+                {{ key }} : {{ value }}
+                </text> -->
+            </g>    
         </svg>
         <a-dropdown :open="isDropdownVisible" class="absolute top-0 right-0 mr-1 mt-1">
             <template #overlay>
@@ -72,7 +82,8 @@ import { generatePath } from "../generator/generator"
 import { interpolatePurples } from 'd3-scale-chromatic';
 import * as d3 from "d3" 
 
-import { getMax } from '../computation/computation'
+import { getMax, filterDataByTimeRange, getTimeStamp, getValues } from '../computation/computation'
+
 
 
 export default {
@@ -89,6 +100,7 @@ export default {
     setup() {
         const fileInput = ref(null)
         const fileData = ref({})
+        const fileData_copy = ref({})
         const visibleVariables = ref([])
         const isDropdownVisible = ref(false)
 
@@ -98,6 +110,8 @@ export default {
 
         const xAxisRef = ref(null)
         const yAxisRef = ref(null)
+        const brushRef = ref(null)
+
 
         const dotLineVisible = ref(false)
         const mouseX = ref(0)
@@ -106,6 +120,7 @@ export default {
             if (svgRef.value) {
                 cardWidth.value = svgRef.value.clientWidth
                 cardHeight.value = svgRef.value.clientHeight
+                setupBrush()
             }    
         })
 
@@ -126,7 +141,10 @@ export default {
                     });
 
                     fileData.value = rawData
-                    console.log(fileData.value)
+                    fileData_copy.value = rawData
+
+
+                    //console.log(fileData.value)
                     
                 };
                 reader.readAsText(file);
@@ -149,6 +167,10 @@ export default {
         const toggleDropdown = () => {
             isDropdownVisible.value = !isDropdownVisible.value;
         };
+
+        const reset = () => {
+            fileData.value = fileData_copy.value
+        }
 
         const handleMouseOver = (event) => {
             dotLineVisible.value = true
@@ -201,6 +223,36 @@ export default {
                 return scales(selectedData.value,cardWidth.value,cardHeight.value).yScale  
         })
 
+        const calculateYPosition = (key,data) => {
+            const index = Object.keys(data).indexOf(key);
+            return cardHeight.value/3 + index * 10
+        }
+
+        const setupBrush = () => {
+            const brush = d3.brushX() 
+                .extent([[40, 10], [cardWidth.value-10, cardHeight.value-30]]) 
+                .on('end', brushed)
+            d3.select(brushRef.value).call(brush);
+
+            // Store the brush for later use
+            brushRef.value.brush = brush;
+        };
+
+        const brushed = (event) => {
+            const selection = event.selection;
+            if (selection) {
+                // Convert the brush coordinates to your time scale
+                const timeRange = selection.map(xScale.value.invert)
+                // Use timeRange to filter or update your chart
+                //console.log('Selected Time Range:', timeRange)
+
+                fileData.value = filterDataByTimeRange(fileData.value,timeRange)
+                d3.select(brushRef.value).call(brushRef.value.brush.move, null)
+            }
+        };
+
+
+
         watchEffect(() => {
             if (xAxisRef.value) {
                 const xAxis = d3.axisBottom(xScale.value);
@@ -211,7 +263,8 @@ export default {
                 const yAxis = d3.axisRight(yScale.value);
                 d3.select(yAxisRef.value).call(yAxis);
             }
-        });
+        })
+        
 
         return { 
             fileInput, 
@@ -222,6 +275,7 @@ export default {
             handleFileChange,
             handleCheckboxChange,
             toggleDropdown,
+            reset,
             variableCollection,
             visibleVariables,
             selectedData,
@@ -230,6 +284,7 @@ export default {
             yScale,
             xAxisRef,
             yAxisRef,
+            brushRef,
             mouseX,
             getMax,
             generatePath,
@@ -237,7 +292,10 @@ export default {
             handleMouseOver,
             handleMouseMove,
             handleMouseLeave,
-            dotLineVisible
+            dotLineVisible,
+            getTimeStamp,
+            getValues,
+            calculateYPosition
         }
     }
 }
@@ -246,9 +304,14 @@ export default {
 <style scoped>
 .linechart:hover {
     stroke-width: 4;
-    stroke:#F3C212
-
+    stroke:#F3C212;
 }
+
+.brush .selection {
+    fill: rgb(100, 102, 102);
+    opacity: 0.3;
+}
+
 </style>
 
 

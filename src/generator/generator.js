@@ -9,8 +9,6 @@ const lineGenerator = (xScale, yScale) => {
 }
 
 export const generatePath = (data,xScale, yScale) => {
-    console.log("check")
-    console.log(data)
     return lineGenerator(xScale,yScale)(data)
 }
 

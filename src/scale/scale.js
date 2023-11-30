@@ -34,18 +34,14 @@ export const scales = (data,width,height) => {
     //     ]
     // }
     //suppose we have the same time range
-    console.log("check data")
-    console.log(data)
+    // console.log("check data")
+    // console.log(data)
     const max = getMax(data)
     console.log(max)
 
     const xScale = d3.scaleTime()
     .domain(d3.extent(Object.values(data)[0], d => d.Time)) 
-<<<<<<< HEAD
-    .range([30, width - 10])
-=======
     .range([40, width - 10])
->>>>>>> 0705d8171fa0be04b08d11af3e6019c52e3e2ff5
 
     const yScale = d3.scaleLinear()
         .domain([0, max])
