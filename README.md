@@ -1,10 +1,42 @@
-# TS_TestingBoard
+# TS_Inspector
 
-This template should help get you started developing with Vue 3 in Vite.
+This is an interactive tool for you to inspect multiple time series with multiple variables.
 
-## Recommended IDE Setup
+## Upload File Format
+The tool now only supports time series data in the form of json.
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
+```sh
+{
+    "Metric1": [
+        {
+            "Time": "2022-11-27",
+            "value": 3
+        },
+        {
+            "Time": "2022-11-28",
+            "value": 4
+        },
+        {
+            "Time": "2022-11-29",
+            "value": 5
+        }
+    ],
+    "Metric2": [
+        {
+            "Time": "2022-11-27",
+            "value": 5
+        },
+        {
+            "Time": "2022-11-28",
+            "value": 6
+        },
+        {
+            "Time": "2022-11-29",
+            "value": 8
+        }
+    ]
+}
+```
 
 ## Customize configuration
 
