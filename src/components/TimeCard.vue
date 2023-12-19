@@ -1,14 +1,19 @@
 <template>
-    <div class="w-full h-1/5 rounded-md my-5 relative">
+    <div class="w-full h-1/5 rounded-md my-5 relative ">
         <input type="file" id="fileInput" ref="fileInput" style="display: none;" @change="handleFileChange" />
         <font-awesome-icon 
+            :icon="['fas', 'xmark']" 
+            class="ml-2 mt-2 cursor-pointer absolute top-0 left-1 z-10 hover:bg-blue-200 p-1 rounded-md" 
+            @click="cancel" 
+        />
+        <font-awesome-icon 
             :icon="['fas', 'file-import']" 
-            class="ml-2 mt-2 cursor-pointer absolute top-0 left-0 z-10 hover:bg-blue-200 p-1 rounded-md" 
+            class="ml-2 mt-2 cursor-pointer absolute top-8 left-0 z-10 hover:bg-blue-200 p-1 rounded-md" 
             @click="triggerFileInput" 
         />
         <font-awesome-icon 
             :icon="['fas', 'arrow-rotate-left']" 
-            class="ml-2 mt-2 cursor-pointer absolute top-8 left-0 z-10 hover:bg-blue-200 p-1 rounded-md" 
+            class="ml-2 mt-2 cursor-pointer absolute top-16 left-0 z-10 hover:bg-blue-200 p-1 rounded-md" 
             @click="reset" 
         />
         <svg 
@@ -18,6 +23,7 @@
         @mouseleave="handleMouseLeave"
         @mousemove="handleMouseMove"
         >
+            <g ref="brushRef" :transform="`translate(0, 0)`"></g>
             <path 
                 v-for="(num,index) in visibleVariables.length" 
                 :key="num"
@@ -28,9 +34,8 @@
                 class="linechart cursor-pointer" 
             >
             </path>
-            <g ref="xAxisRef" :transform="`translate(40, ${cardHeight - 20})`"></g>
+            <g ref="xAxisRef" :transform="`translate(0, ${cardHeight - 20})`"></g>
             <g ref="yAxisRef" style="display: none;" transform="translate(10,0)"></g>
-            <g ref="brushRef" :transform="`translate(40, 0)`"></g>
             <g v-if="false">
                 <line 
                 :x1 = "mouseX"
@@ -176,6 +181,10 @@ export default {
             setTimeRange([])
         }
 
+        const cancel = () => {
+
+        }
+
         const handleMouseOver = (event) => {
             dotLineVisible.value = true
             const bounds = svgRef.value.getBoundingClientRect();
@@ -249,7 +258,7 @@ export default {
                 const newTimeRange = selection.map(xScale.value.invert)
                 setTimeRange(newTimeRange)
                 // Use timeRange to filter or update your chart
-                //console.log('Selected Time Range:', timeRange)
+                console.log('Selected Time Range:', timeRange)
                 //fileData.value = filterDataByTimeRange(fileData.value,newTimeRange)
                 d3.select(brushRef.value).call(brushRef.value.brush.move, null)
             }
@@ -273,6 +282,9 @@ export default {
             if (timeRange.value.length !=0) {
                 fileData.value = filterDataByTimeRange(fileData.value, timeRange.value)
             }
+            else if(timeRange.value.length == 0){
+                fileData.value = fileData_copy.value
+            }
         })
         
 
@@ -286,6 +298,7 @@ export default {
             handleCheckboxChange,
             toggleDropdown,
             reset,
+            cancel,
             variableCollection,
             visibleVariables,
             selectedData,

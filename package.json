@@ -18,7 +18,8 @@
     "d3-axis": "^3.0.0",
     "d3-scale-chromatic": "^3.0.0",
     "vue": "^3.3.4",
-    "vue3-perfect-scrollbar": "^1.6.1"
+    "vue3-perfect-scrollbar": "^1.6.1",
+    "vuedraggable": "^4.1.0"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.4.0",
