@@ -4,9 +4,10 @@
       <div class="w-full h-full p-5 overflow-scroll">
         <!-- vuedraggable component -->
         <vuedraggable 
-          v-model="cards" 
+          :list="cards" 
           item-key="id" 
-          group="timecards">
+          group="timecards"
+          @end="updateCards">
           <template #item="{element}">
             <TimeCard :key="element.id" :cardID = "element.id"/>
           </template>
@@ -34,7 +35,14 @@
     },
     setup() {
       const store = useStore()
-      const cards = computed(()=>store.getters.Cards)
+      const cards = computed({
+        get: () => store.getters.Cards,
+        set: newValue => store.dispatch('updateCards', newValue)
+      })
+
+      const updateCards = (event) => {
+        store.dispatch('updateCards',event)
+      }
   
       const addCard = () => {
         store.dispatch("addCard")
@@ -48,6 +56,7 @@
         cards,
         addCard,
         removeCard,
+        updateCards,
 
       }
     }
