@@ -4,7 +4,7 @@
         <font-awesome-icon 
             :icon="['fas', 'xmark']" 
             class="ml-2 mt-2 cursor-pointer absolute top-0 left-1 z-10 hover:bg-blue-200 p-1 rounded-md" 
-            @click="cancel" 
+            @click="deleteCard(cardID)" 
         />
         <font-awesome-icon 
             :icon="['fas', 'file-import']" 
@@ -78,6 +78,7 @@
 
 <script>
 import { ref, computed, onMounted, watchEffect  } from 'vue'
+import { useStore } from 'vuex'
 import { Dropdown, Menu, Checkbox, Button } from 'ant-design-vue'
 import { DownOutlined, UpOutlined } from '@ant-design/icons-vue'
 
@@ -92,8 +93,10 @@ import { getMax, filterDataByTimeRange, getTimeStamp, getValues } from '../compu
 
 
 
+
 export default {
     name: "TimeCard",
+    props: ["cardID"],
     components: {
         'a-dropdown': Dropdown,
         'a-menu': Menu,
@@ -123,6 +126,8 @@ export default {
         const mouseX = ref(0)
 
         const { timeRange, setTimeRange } = useTimeRange()
+
+        const store = useStore()
 
         onMounted(() => {
             if (svgRef.value) {
@@ -181,8 +186,8 @@ export default {
             setTimeRange([])
         }
 
-        const cancel = () => {
-
+        const deleteCard = (id) => {
+            store.dispatch("deleteCard",id)
         }
 
         const handleMouseOver = (event) => {
@@ -298,7 +303,7 @@ export default {
             handleCheckboxChange,
             toggleDropdown,
             reset,
-            cancel,
+            deleteCard,
             variableCollection,
             visibleVariables,
             selectedData,

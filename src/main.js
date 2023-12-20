@@ -11,10 +11,13 @@ import { faPlus, faMinus, faFileImport, faArrowRotateLeft, faXmark } from '@fort
 import PerfectScrollbar from 'vue3-perfect-scrollbar'
 import 'vue3-perfect-scrollbar/dist/vue3-perfect-scrollbar.css'
 
+import store from "./store"
+
 library.add(faPlus, faMinus, faFileImport, faArrowRotateLeft, faXmark)
 
 createApp(App)
 .use(Antd)
+.use(store)
 .use(PerfectScrollbar)
 .component('font-awesome-icon', FontAwesomeIcon)
 .mount('#app')

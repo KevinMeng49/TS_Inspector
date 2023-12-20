@@ -8,7 +8,7 @@
           item-key="id" 
           group="timecards">
           <template #item="{element}">
-            <TimeCard :key="element.id" />
+            <TimeCard :key="element.id" :cardID = "element.id"/>
           </template>
         </vuedraggable>
         <div class="flex">
@@ -22,7 +22,8 @@
   
 <script>
   import TimeCard from "./components/TimeCard.vue"
-  import { ref } from 'vue'
+  import { computed } from 'vue'
+  import { useStore } from "vuex"
   import vuedraggable from 'vuedraggable'
   
   export default {
@@ -32,19 +33,17 @@
       vuedraggable
     },
     setup() {
-      const cards = ref([])
+      const store = useStore()
+      const cards = computed(()=>store.getters.Cards)
   
       const addCard = () => {
-        cards.value.push({ id: cards.value.length + 1 });
+        store.dispatch("addCard")
       }
   
       const removeCard = () => {
-        cards.value.pop();
+        store.dispatch("removeCard")
       }
 
-      
-
-  
       return {
         cards,
         addCard,
