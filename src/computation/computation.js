@@ -10,6 +10,20 @@ export const getMax = (manySeries) => {
     return max;
 }
 
+export const getMin = (manySeries) => {
+    let min = Infinity;
+    for (const series in manySeries) {
+        const seriesMin = Math.min(...manySeries[series].map(item => item.value));
+        if (seriesMin < min) {
+            min = seriesMin;
+        }    
+    }
+    if(min < 0) {
+        return 0
+    }
+    return min;
+}
+
 export const filterDataByTimeRange = (data,timeRange) => {
     let filteredData = {}
     Object.keys(data).forEach(metric => {

@@ -23,7 +23,7 @@
         @mouseleave="handleMouseLeave"
         @mousemove="handleMouseMove"
         >
-            <g ref="brushRef" :transform="`translate(0, 0)`"></g>
+            <g ref="brushRef"></g>
             <path 
                 v-for="(num,index) in visibleVariables.length" 
                 :key="num"
@@ -35,7 +35,7 @@
             >
             </path>
             <g ref="xAxisRef" :transform="`translate(0, ${cardHeight - 20})`"></g>
-            <g ref="yAxisRef" style="display: none;" transform="translate(10,0)"></g>
+            <g ref="yAxisRef" style="display: none;" transform="translate(0,0)"></g>
             <g v-if="false">
                 <line 
                 :x1 = "mouseX"
@@ -224,10 +224,20 @@ export default {
             return filteredData;
         });
 
+        const parseDate = d3.timeParse("%Y-%m-%d");
+
+
 
         const transformData = (rawData) => {
             return rawData.map(data => {
-                data.Time = new Date(data.Time);
+                if (data.Time.includes(" "))
+                 { 
+                    data.Time =new Date(data.Time);
+                } 
+                else {
+                    data.Time = parseDate(data.Time);
+                }
+                // data.Time = new Date(data.Time);
                 data.value = data.value === '-' ? 0 : Number(data.value);
                 return data;
             });

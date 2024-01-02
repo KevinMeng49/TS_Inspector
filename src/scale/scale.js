@@ -1,5 +1,5 @@
 import * as d3 from "d3"
-import { getMax } from "../computation/computation"
+import { getMax, getMin } from "../computation/computation"
 
 export const scales = (data,width,height) => {
     //the format of data(single or multiple series):
@@ -37,14 +37,16 @@ export const scales = (data,width,height) => {
     // console.log("check data")
     // console.log(data)
     const max = getMax(data)
-    console.log(max)
+    const min = getMin(data)
+    //console.log(max)
+    //console.log(min)
 
     const xScale = d3.scaleTime()
     .domain(d3.extent(Object.values(data)[0], d => d.Time)) 
-    .range([40, width - 10])
+    .range([40, width -10])
 
     const yScale = d3.scaleLinear()
-        .domain([0, max])
+        .domain([min, max])
         .range([height - 20, 10])
 
     return { xScale,yScale }

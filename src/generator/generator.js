@@ -5,7 +5,7 @@ const lineGenerator = (xScale, yScale) => {
     return d3.line()
     .x(d => xScale(d.Time))
     .y(d => yScale(d.value))
-    .curve(d3.curveBasis)
+    // .curve(d3.curveBasis)
 }
 
 export const generatePath = (data,xScale, yScale) => {
